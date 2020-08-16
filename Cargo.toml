@@ -1,7 +1,13 @@
 [package]
 authors = ["Alexander Lyon <arlyon@me.com>"]
+description = "Ergonomic blue noise (poisson disk sampling) for the masses."
 edition = "2018"
-name = "bluenoise-rs"
+homepage = "https://crates.io/crates/bluenoise"
+keywords = ["noise", "poisson", "blue"]
+license = "MIT OR Apache-2.0"
+name = "bluenoise"
+readme = "readme.md"
+repository = "https://github.com/arlyon/bluenoise"
 version = "0.1.0"
 
 [dependencies]
@@ -9,3 +15,6 @@ glam = "0.9.3"
 itertools = "0.9.0"
 rand = {version = "0.7.3", features = ["small_rng"]}
 rand_pcg = "0.2.1"
+
+[dev-dependencies]
+clippy = "0.0.302"
