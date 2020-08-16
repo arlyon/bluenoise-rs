@@ -1,0 +1,11 @@
+[package]
+authors = ["Alexander Lyon <arlyon@me.com>"]
+edition = "2018"
+name = "bluenoise-rs"
+version = "0.1.0"
+
+[dependencies]
+glam = "0.9.3"
+itertools = "0.9.0"
+rand = {version = "0.7.3", features = ["small_rng"]}
+rand_pcg = "0.2.1"
