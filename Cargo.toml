@@ -18,3 +18,8 @@ rand_pcg = "0.2.1"
 
 [dev-dependencies]
 clippy = "0.0.302"
+criterion = "0.3.3"
+
+[[bench]]
+harness = false
+name = "basic"

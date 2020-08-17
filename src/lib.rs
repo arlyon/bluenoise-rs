@@ -45,7 +45,7 @@ use rand::SeedableRng;
 use rand_pcg::Pcg64Mcg;
 
 /// Provides a source of BlueNoise in a given area at some density.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BlueNoise {
     width: u32,
     height: u32,
