@@ -180,7 +180,7 @@ impl BlueNoise {
                 .get(y * self.grid_width + x)
                 .expect("Ended up out of bounds when fetching point.")
             {
-                Some(target) => (*target - point).length_squared() > self.radius_squared,
+                Some(target) => (*target - point).length_squared() >= self.radius_squared,
                 None => true,
             }
         })
@@ -206,9 +206,10 @@ impl BlueNoise {
     }
 
     /// Get some nearby point
-    fn get_nearby(&mut self, position: Vec2) -> Vec2 {
-        let theta = 2.0 * PI * self.rng.gen::<f32>();
-        let radius = self.radius * (self.rng.gen::<f32>() + 1.0);
+    fn get_nearby(&mut self, position: Vec2, sample: u32) -> Vec2 {
+        let offset = self.rng.gen::<f32>() + sample as f32 / self.max_samples as f32;
+        let theta = 2.0 * PI * offset;
+        let radius = self.radius + 0.001;
         Vec2::new(
             position.x() + radius * theta.cos(),
             position.y() + radius * theta.sin(),
@@ -231,8 +232,8 @@ impl Iterator for BlueNoise {
             let index = self.rng.gen::<f32>() * (self.active_points.len() - 1) as f32;
             let parent = self.active_points[index as usize];
 
-            for _ in 0..self.max_samples {
-                let point = self.get_nearby(parent);
+            for sample in 0..self.max_samples {
+                let point = self.get_nearby(parent, sample);
                 if self.is_valid(point) {
                     return Some(self.insert_point(point));
                 }
@@ -250,7 +251,7 @@ mod test {
 
     #[test]
     fn get_points() {
-        let mut noise = BlueNoise::new(10, 10, 1.0);
+        let mut noise = BlueNoise::new(100, 100, 1.0);
         for x in noise.with_seed(0) {
             println!("{},{}", x.x(), x.y());
         }

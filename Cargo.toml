@@ -7,8 +7,8 @@ keywords = ["noise", "poisson", "blue"]
 license = "MIT OR Apache-2.0"
 name = "bluenoise"
 readme = "readme.md"
-version = "0.1.0"
 repository = "https://github.com/arlyon/bluenoise-rs"
+version = "0.1.1"
 
 [dependencies]
 glam = "0.9.3"
