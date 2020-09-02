@@ -76,12 +76,33 @@ impl BlueNoise {
     /// * `min_radius`: The minimum distance between points.
     #[must_use = "This is quite expensive to initialise. You can interate over it to consume it."]
     pub fn new(width: u32, height: u32, min_radius: f32) -> Self {
+        Self::from_rng(width, height, min_radius, SeedableRng::from_entropy())
+    }
+
+    /// Creates a new instance of `BlueNoise`.
+    ///
+    /// * `width`: The width of the box to generate inside.
+    /// * `height`: The height of the cox to generate inside.
+    /// * `min_radius`: The minimum distance between points.
+    /// * `seed`: Value to seed the rng with
+    #[must_use = "This is quite expensive to initialise. You can interate over it to consume it."]
+    pub fn from_seed(width: u32, height: u32, min_radius: f32, seed: u64) -> Self {
+        Self::from_rng(width, height, min_radius, SeedableRng::seed_from_u64(seed))
+    }
+
+    /// Creates a new instance of `BlueNoise`.
+    ///
+    /// * `width`: The width of the box to generate inside.
+    /// * `height`: The height of the cox to generate inside.
+    /// * `min_radius`: The minimum distance between points.
+    /// * `rng`: Rng to use
+    #[must_use = "This is quite expensive to initialise. You can interate over it to consume it."]
+    pub fn from_rng(width: u32, height: u32, min_radius: f32, rng: Pcg64Mcg) -> Self {
         let cell_size = min_radius * FRAC_1_SQRT_2;
         let grid_width = (width as f32 / cell_size).ceil() as usize;
         let grid_height = (height as f32 / cell_size).ceil() as usize;
         let grid = vec![None; grid_width * grid_height];
         let radius_squared = min_radius * min_radius;
-        let rng = SeedableRng::from_entropy();
 
         Self {
             width,
