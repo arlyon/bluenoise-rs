@@ -267,6 +267,7 @@ impl Iterator for BlueNoise {
     }
 }
 
+#[cfg(test)]
 mod test {
     use crate::BlueNoise;
 
