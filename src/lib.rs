@@ -17,8 +17,9 @@
 //! # Examples
 //! ```
 //! use bluenoise::BlueNoise;
+//! use rand_pcg::Pcg64Mcg;
 //!
-//! let mut noise = BlueNoise::new(50.0, 50.0, 10.0);
+//! let mut noise = BlueNoise::<Pcg64Mcg>::new(50.0, 50.0, 10.0);
 //! let noise = noise.with_samples(10).with_seed(10);
 //!
 //! for point in noise.take(10) {
@@ -42,11 +43,10 @@ use glam::Vec2;
 use itertools::Itertools;
 use rand::Rng;
 use rand::SeedableRng;
-use rand_pcg::Pcg64Mcg;
 
 /// Provides a source of `BlueNoise` in a given area at some density.
 #[derive(Debug, Clone)]
-pub struct BlueNoise {
+pub struct BlueNoise<R: Rng> {
     width: f32,
     height: f32,
     max_samples: u32,
@@ -64,11 +64,11 @@ pub struct BlueNoise {
     /// points around.
     active_points: Vec<Vec2>,
 
-    rng: Pcg64Mcg,
+    rng: R,
     init: bool,
 }
 
-impl BlueNoise {
+impl<R: Rng + SeedableRng> BlueNoise<R> {
     /// Creates a new instance of `BlueNoise`.
     ///
     /// * `width`: The width of the box to generate inside.
@@ -90,6 +90,17 @@ impl BlueNoise {
         Self::from_rng(width, height, min_radius, SeedableRng::seed_from_u64(seed))
     }
 
+    /// A builder function to seed the rng with a specific
+    /// value.
+    ///
+    /// For an example, see the `BlueNoise` examples.
+    pub fn with_seed(&mut self, seed: u64) -> &mut Self {
+        self.rng = SeedableRng::seed_from_u64(seed);
+        self
+    }
+}
+
+impl<R: Rng> BlueNoise<R> {
     /// Creates a new instance of `BlueNoise`.
     ///
     /// * `width`: The width of the box to generate inside.
@@ -97,7 +108,7 @@ impl BlueNoise {
     /// * `min_radius`: The minimum distance between points.
     /// * `rng`: Rng to use
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
-    pub fn from_rng(width: f32, height: f32, min_radius: f32, rng: Pcg64Mcg) -> Self {
+    pub fn from_rng(width: f32, height: f32, min_radius: f32, rng: R) -> Self {
         let cell_size = min_radius * FRAC_1_SQRT_2;
         let grid_width = (width / cell_size).ceil() as usize;
         let grid_height = (height / cell_size).ceil() as usize;
@@ -129,15 +140,6 @@ impl BlueNoise {
         self
     }
 
-    /// A builder function to seed the rng with a specific
-    /// value.
-    ///
-    /// For an example, see the `BlueNoise` examples.
-    pub fn with_seed(&mut self, seed: u64) -> &mut Self {
-        self.rng = SeedableRng::seed_from_u64(seed);
-        self
-    }
-
     /// A builder function to set the minimum radius between
     /// points.
     ///
@@ -153,8 +155,9 @@ impl BlueNoise {
     ///
     /// ```
     /// use bluenoise::BlueNoise;
+    /// use rand_pcg::Pcg64Mcg;
     ///
-    /// let mut noise = BlueNoise::new(10.0, 10.0, 1.0);
+    /// let mut noise = BlueNoise::<Pcg64Mcg>::new(10.0, 10.0, 1.0);
     /// let first_10 = noise.with_seed(25).take(10).collect::<Vec<_>>();
     ///
     /// // make sure to re-initialise your seed!
@@ -238,7 +241,7 @@ impl BlueNoise {
     }
 }
 
-impl Iterator for BlueNoise {
+impl<R: Rng> Iterator for BlueNoise<R> {
     type Item = Vec2;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -270,10 +273,11 @@ impl Iterator for BlueNoise {
 #[cfg(test)]
 mod test {
     use crate::BlueNoise;
+    use rand_pcg::Pcg64Mcg;
 
     #[test]
     fn get_points() {
-        let mut noise = BlueNoise::new(100.0, 100.0, 1.0);
+        let mut noise = BlueNoise::<Pcg64Mcg>::new(100.0, 100.0, 1.0);
         for x in noise.with_seed(0) {
             println!("{},{}", x.x(), x.y());
         }
