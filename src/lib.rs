@@ -18,7 +18,7 @@
 //! ```
 //! use bluenoise::BlueNoise;
 //!
-//! let mut noise = BlueNoise::new(50, 50, 10.0);
+//! let mut noise = BlueNoise::new(50.0, 50.0, 10.0);
 //! let noise = noise.with_samples(10).with_seed(10);
 //!
 //! for point in noise.take(10) {
@@ -47,8 +47,8 @@ use rand_pcg::Pcg64Mcg;
 /// Provides a source of `BlueNoise` in a given area at some density.
 #[derive(Debug, Clone)]
 pub struct BlueNoise {
-    width: u32,
-    height: u32,
+    width: f32,
+    height: f32,
     max_samples: u32,
 
     /// The minimum radius between points.
@@ -75,7 +75,7 @@ impl BlueNoise {
     /// * `height`: The height of the cox to generate inside.
     /// * `min_radius`: The minimum distance between points.
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
-    pub fn new(width: u32, height: u32, min_radius: f32) -> Self {
+    pub fn new(width: f32, height: f32, min_radius: f32) -> Self {
         Self::from_rng(width, height, min_radius, SeedableRng::from_entropy())
     }
 
@@ -86,7 +86,7 @@ impl BlueNoise {
     /// * `min_radius`: The minimum distance between points.
     /// * `seed`: Value to seed the rng with
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
-    pub fn from_seed(width: u32, height: u32, min_radius: f32, seed: u64) -> Self {
+    pub fn from_seed(width: f32, height: f32, min_radius: f32, seed: u64) -> Self {
         Self::from_rng(width, height, min_radius, SeedableRng::seed_from_u64(seed))
     }
 
@@ -97,10 +97,10 @@ impl BlueNoise {
     /// * `min_radius`: The minimum distance between points.
     /// * `rng`: Rng to use
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
-    pub fn from_rng(width: u32, height: u32, min_radius: f32, rng: Pcg64Mcg) -> Self {
+    pub fn from_rng(width: f32, height: f32, min_radius: f32, rng: Pcg64Mcg) -> Self {
         let cell_size = min_radius * FRAC_1_SQRT_2;
-        let grid_width = (width as f32 / cell_size).ceil() as usize;
-        let grid_height = (height as f32 / cell_size).ceil() as usize;
+        let grid_width = (width / cell_size).ceil() as usize;
+        let grid_height = (height / cell_size).ceil() as usize;
         let grid = vec![None; grid_width * grid_height];
         let radius_squared = min_radius * min_radius;
 
@@ -154,7 +154,7 @@ impl BlueNoise {
     /// ```
     /// use bluenoise::BlueNoise;
     ///
-    /// let mut noise = BlueNoise::new(10, 10, 1.0);
+    /// let mut noise = BlueNoise::new(10.0, 10.0, 1.0);
     /// let first_10 = noise.with_seed(25).take(10).collect::<Vec<_>>();
     ///
     /// // make sure to re-initialise your seed!
@@ -177,9 +177,9 @@ impl BlueNoise {
     fn is_valid(&self, point: Vec2) -> bool {
         // remove anything outside our box
         if point.x() < 0.0
-            || point.x() > self.width as f32
+            || point.x() > self.width
             || point.y() < 0.0
-            || point.y() > self.height as f32
+            || point.y() > self.height
         {
             return false;
         };
@@ -244,8 +244,8 @@ impl Iterator for BlueNoise {
     fn next(&mut self) -> Option<Self::Item> {
         if !self.init {
             self.init = true;
-            let x = self.rng.gen_range(0.0, self.width as f32);
-            let y = self.rng.gen_range(0.0, self.height as f32);
+            let x = self.rng.gen_range(0.0, self.width);
+            let y = self.rng.gen_range(0.0, self.height);
             return Some(self.insert_point(Vec2::new(x, y)));
         }
 
@@ -273,7 +273,7 @@ mod test {
 
     #[test]
     fn get_points() {
-        let mut noise = BlueNoise::new(100, 100, 1.0);
+        let mut noise = BlueNoise::new(100.0, 100.0, 1.0);
         for x in noise.with_seed(0) {
             println!("{},{}", x.x(), x.y());
         }
