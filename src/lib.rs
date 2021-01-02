@@ -230,8 +230,8 @@ impl<R: Rng> BlueNoise<R> {
     }
 
     /// Get some nearby point
-    fn get_nearby(&mut self, position: Vec2, sample: u32) -> Vec2 {
-        let offset = self.rng.gen::<f32>() + sample as f32 / self.max_samples as f32;
+    fn get_nearby(&mut self, position: Vec2, seed: f32, sample: u32) -> Vec2 {
+        let offset = seed + sample as f32 / self.max_samples as f32;
         let theta = 2.0 * PI * offset;
         let radius = self.radius + 0.001;
         Vec2::new(
@@ -256,8 +256,9 @@ impl<R: Rng> Iterator for BlueNoise<R> {
             let index = self.rng.gen::<f32>() * (self.active_points.len() - 1) as f32;
             let parent = self.active_points[index as usize];
 
+            let seed = self.rng.gen::<f32>();
             for sample in 0..self.max_samples {
-                let point = self.get_nearby(parent, sample);
+                let point = self.get_nearby(parent, seed, sample);
                 if self.is_valid(point) {
                     return Some(self.insert_point(point));
                 }
