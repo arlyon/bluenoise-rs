@@ -35,7 +35,6 @@
     unreachable_code,
     trivial_numeric_casts
 )]
-#![warn(clippy::pedantic)]
 
 use std::f32::consts::{FRAC_1_SQRT_2, PI};
 
