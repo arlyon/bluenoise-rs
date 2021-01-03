@@ -23,7 +23,7 @@
 //! let noise = noise.with_samples(10).with_seed(10);
 //!
 //! for point in noise.take(10) {
-//!     println!("{}, {}", point.x(), point.y());
+//!     println!("{}, {}", point.x, point.y);
 //! }
 //! ```
 
@@ -179,21 +179,17 @@ impl<R: Rng> BlueNoise<R> {
     /// nearby previously created points.
     fn is_valid(&self, point: Vec2) -> bool {
         // remove anything outside our box
-        if point.x() < 0.0
-            || point.x() > self.width
-            || point.y() < 0.0
-            || point.y() > self.height
-        {
+        if point.x < 0.0 || point.x > self.width || point.y < 0.0 || point.y > self.height {
             return false;
         };
 
         let x_range = {
-            let x = (point.x() / self.cell_size) as usize;
+            let x = (point.x / self.cell_size) as usize;
             x.saturating_sub(2)..(x + 3).min(self.grid_width)
         };
 
         let y_range = {
-            let y = (point.y() / self.cell_size) as usize;
+            let y = (point.y / self.cell_size) as usize;
             y.saturating_sub(2)..(y + 3).min(self.grid_height)
         };
 
@@ -212,8 +208,8 @@ impl<R: Rng> BlueNoise<R> {
 
     /// Get the index for a given position
     fn grid_index(&self, position: Vec2) -> usize {
-        let y = self.grid_width * (position.y() / self.cell_size) as usize;
-        let x = (position.x() / self.cell_size) as usize;
+        let y = self.grid_width * (position.y / self.cell_size) as usize;
+        let x = (position.x / self.cell_size) as usize;
         let out = y + x;
 
         assert_ne!(self.grid_width * self.grid_height, x);
@@ -235,8 +231,8 @@ impl<R: Rng> BlueNoise<R> {
         let theta = 2.0 * PI * offset;
         let radius = self.radius + 0.001;
         Vec2::new(
-            position.x() + radius * theta.cos(),
-            position.y() + radius * theta.sin(),
+            position.x + radius * theta.cos(),
+            position.y + radius * theta.sin(),
         )
     }
 }
@@ -247,8 +243,8 @@ impl<R: Rng> Iterator for BlueNoise<R> {
     fn next(&mut self) -> Option<Self::Item> {
         if !self.init {
             self.init = true;
-            let x = self.rng.gen_range(0.0, self.width);
-            let y = self.rng.gen_range(0.0, self.height);
+            let x = self.rng.gen_range(0.0..self.width);
+            let y = self.rng.gen_range(0.0..self.height);
             return Some(self.insert_point(Vec2::new(x, y)));
         }
 
@@ -278,9 +274,7 @@ mod test {
 
     #[test]
     fn get_points() {
-        let mut noise = BlueNoise::<Pcg64Mcg>::new(100.0, 100.0, 1.0);
-        for x in noise.with_seed(0) {
-            println!("{},{}", x.x(), x.y());
-        }
+        let noise = BlueNoise::<Pcg64Mcg>::new(100.0, 100.0, 1.0);
+        assert!(noise.count() > 0);
     }
 }
