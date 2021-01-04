@@ -71,7 +71,7 @@ impl<R: Rng + SeedableRng> BlueNoise<R> {
     /// Creates a new instance of `BlueNoise`.
     ///
     /// * `width`: The width of the box to generate inside.
-    /// * `height`: The height of the cox to generate inside.
+    /// * `height`: The height of the box to generate inside.
     /// * `min_radius`: The minimum distance between points.
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
     pub fn new(width: f32, height: f32, min_radius: f32) -> Self {
@@ -81,7 +81,7 @@ impl<R: Rng + SeedableRng> BlueNoise<R> {
     /// Creates a new instance of `BlueNoise`.
     ///
     /// * `width`: The width of the box to generate inside.
-    /// * `height`: The height of the cox to generate inside.
+    /// * `height`: The height of the box to generate inside.
     /// * `min_radius`: The minimum distance between points.
     /// * `seed`: Value to seed the rng with
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
@@ -103,7 +103,7 @@ impl<R: Rng> BlueNoise<R> {
     /// Creates a new instance of `BlueNoise`.
     ///
     /// * `width`: The width of the box to generate inside.
-    /// * `height`: The height of the cox to generate inside.
+    /// * `height`: The height of the box to generate inside.
     /// * `min_radius`: The minimum distance between points.
     /// * `rng`: Rng to use
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
