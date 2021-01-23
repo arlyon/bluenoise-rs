@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 name = "bluenoise"
 readme = "readme.md"
 repository = "https://github.com/arlyon/bluenoise-rs"
-version = "0.1.2"
+version = "0.2.0"
 
 [dependencies]
 glam = "0.11.0"

@@ -21,5 +21,5 @@ Otherwise, add `bluenoise` to your `Cargo.toml`.
 
 ```
 [dependencies]
-bluenoise = "0.1"
+bluenoise = "0.2"
 ```
