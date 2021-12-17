@@ -43,7 +43,7 @@
 #![deny(
     dead_code,
     missing_docs,
-    missing_doc_code_examples,
+    rustdoc::missing_doc_code_examples,
     unsafe_code,
     unreachable_code,
     trivial_numeric_casts
