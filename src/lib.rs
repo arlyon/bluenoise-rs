@@ -189,7 +189,7 @@ impl<R: Rng> BlueNoise<R> {
 
     /// Compute the distance between two points
     fn distance(&self, point: Vec2, target: Vec2) -> f32 {
-        point.distance(target)
+        point.distance_squared(target)
     }
 
     /// Check if a position is far enough away from
@@ -460,8 +460,20 @@ mod test {
     }
 
     #[test]
+    fn get_points_gt_one() {
+        let noise = BlueNoise::<Pcg64Mcg>::new(100.0, 100.0, 10.0);
+        assert!(noise.count() > 1);
+    }
+
+    #[test]
     fn get_points_wrapping() {
         let noise = WrappingBlueNoise::<Pcg64Mcg>::new(100.0, 100.0, 1.0);
         assert!(noise.count() > 0);
+    }
+
+    #[test]
+    fn get_points_wrapping_gt_one() {
+        let noise = WrappingBlueNoise::<Pcg64Mcg>::new(100.0, 100.0, 10.0);
+        assert!(noise.count() > 1);
     }
 }
