@@ -88,7 +88,7 @@ impl<R: Rng + SeedableRng> BlueNoise<R> {
     /// * `min_radius`: The minimum distance between points.
     #[must_use = "This is quite expensive to initialise. You can iterate over it to consume it."]
     pub fn new(width: f32, height: f32, min_radius: f32) -> Self {
-        Self::from_rng(width, height, min_radius, SeedableRng::from_entropy())
+        Self::from_rng(width, height, min_radius, SeedableRng::from_os_rng())
     }
 
     /// Creates a new instance of `BlueNoise`.
@@ -259,16 +259,16 @@ impl<R: Rng> Iterator for BlueNoise<R> {
     fn next(&mut self) -> Option<Self::Item> {
         if !self.init {
             self.init = true;
-            let x = self.rng.gen_range(0.0..self.width);
-            let y = self.rng.gen_range(0.0..self.height);
+            let x = self.rng.random_range(0.0..self.width);
+            let y = self.rng.random_range(0.0..self.height);
             return Some(self.insert_point(Vec2::new(x, y)));
         }
 
         while !self.active_points.is_empty() {
-            let index = self.rng.gen::<f32>() * (self.active_points.len() - 1) as f32;
+            let index = self.rng.random::<f32>() * (self.active_points.len() - 1) as f32;
             let parent = self.active_points[index as usize];
 
-            let seed = self.rng.gen::<f32>();
+            let seed = self.rng.random::<f32>();
             for sample in 0..self.max_samples {
                 let point = self.get_nearby(parent, seed, sample);
                 if self.is_valid(point) {
@@ -424,16 +424,16 @@ impl<R: Rng> Iterator for WrappingBlueNoise<R> {
     fn next(&mut self) -> Option<Self::Item> {
         if !self.0.init {
             self.0.init = true;
-            let x = self.0.rng.gen_range(0.0..self.0.width);
-            let y = self.0.rng.gen_range(0.0..self.0.height);
+            let x = self.0.rng.random_range(0.0..self.0.width);
+            let y = self.0.rng.random_range(0.0..self.0.height);
             return Some(self.0.insert_point(Vec2::new(x, y)));
         }
 
         while !self.0.active_points.is_empty() {
-            let index = self.0.rng.gen::<f32>() * (self.0.active_points.len() - 1) as f32;
+            let index = self.0.rng.random::<f32>() * (self.0.active_points.len() - 1) as f32;
             let parent = self.0.active_points[index as usize];
 
-            let seed = self.0.rng.gen::<f32>();
+            let seed = self.0.rng.random::<f32>();
             for sample in 0..self.0.max_samples {
                 let point = self.get_nearby(parent, seed, sample);
                 if self.is_valid(point) {
